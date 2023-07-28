@@ -14,8 +14,8 @@ cd $WORKSPACE/thirdparty/ \
     && cd libzip-1.1.1/ \
 	&& ./configure \
 	&& make \
-	&& sudo make install \
-	&& sudo cp lib/zipconf.h /usr/local/include/zipconf.h
+	&& make install \
+	&& cp lib/zipconf.h /usr/local/include/zipconf.h
 
 cd $WORKSPACE/ \
 	&& mkdir -p build \
@@ -24,6 +24,7 @@ cd $WORKSPACE/ \
 	&& make -j4
 
 cd $WORKSPACE
+su - user
 
 # Execute the command passed into this entrypoint
 exec "$@"

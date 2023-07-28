@@ -34,6 +34,5 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 
 # Create user at the end to stay root for all the installation steps
 RUN usermod -aG sudo user
-USER user
 WORKDIR /home/user/
 
