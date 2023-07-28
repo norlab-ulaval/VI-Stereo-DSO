@@ -1,0 +1,33 @@
+#!/bin/bash
+source config.sh
+
+image_name=${REPOS_NAME}
+if [ -z "$1" ]; then
+    echo "No argument supplied, using config project name:'${REPOS_NAME}' as run name instead"
+else
+    echo "Using '${1}' as run name"
+    image_name=$1
+fi
+
+XSOCK=/tmp/.X11-unix
+prompt(){ read -p "$1 (y/n) " a; return $(test $a = "y"); }
+	
+docker run -it --rm \
+	--gpus all \
+	--name $image_name \
+	--device /dev/snd \
+	-e DISPLAY=$DISPLAY \
+	-e TERM=xterm-256color \
+	-v $XSOCK:$XSOCK \
+	-v $HOME/.Xauthority:/root/.Xauthority \
+	-v /dev/shm:/dev/shm \
+	-v $IMAGE_FOLDER/.docker_history:$DOCKER_HOME/.bash_history \
+	--privileged \
+	--net=host \
+	--mount "type=bind,source=${REPOS_FOLDER},target=${DOCKER_HOME}/repos" \
+	--mount "type=bind,source=${DATA_FOLDER},target=${DOCKER_HOME}/data" \
+	${image_name}:latest bash
+
+# -v /dev/shm:/dev/shm are for sharing memory space between the container and the host. 
+# By default, ros2 DDS uses shared memory to communicate between processes.
+# --pid=host shares process numbers between docker and the host
